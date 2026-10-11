@@ -1,0 +1,229 @@
+// -------------- General -------------------
+
+prefer-no-csd
+screenshot-path "~/Pictures/screenshots/%Y-%m-%d_%H-%M-%S.png"
+
+// Environment Variables
+environment {
+	QT_QPA_PLATFORM "wayland;xcb"
+	QT_QPA_PLATFORMTHEME "qt6ct"
+	ELECTRON_OZONE_PLATFORM_HINT "auto"
+	MOZ_ENABLE_WAYLAND "1"
+	_JAVA_AWT_WM_MONREPARENTING "1"
+}
+
+debug {
+	honor-xdg-activation-with-invalid-serial
+}
+
+// -------------- Peripherals ---------------
+
+input {
+	keyboard {
+		xkb {
+			layout "de"
+		}
+		repeat-delay 300
+		repeat-rate 50
+	}
+	mouse {
+		accel-profile "flat"
+		accel-speed 0.0    //0.03
+		scroll-factor 1.0
+
+	}
+	// focus-follows-mouse max-scroll-amount="0%"
+}
+
+// -------------- Appearance ----------------
+
+layout {
+	gaps 12
+	center-focused-column "never"
+
+	preset-column-widths {
+		proportion 0.33333
+		proportion 0.5
+		proportion 0.66667
+		proportion 1.0
+	}
+	preset-window-heights {
+		proportion 0.33333
+		proportion 0.5
+		proportion 0.66667
+		proportion 1.0
+	}
+
+	default-column-width { proportion 0.5; }
+
+	focus-ring {
+		width 1
+		//active-gradient from="#7aa2f7" to="#bb9af7" angle=45 relative-to="workspace-view"
+		active-color "#7bc9d0"
+	}
+
+	border {
+		off
+	}
+
+	shadow {
+		on
+		softness 30
+		spread 4
+		offset x=0 y=5
+		color "00000099"
+	}
+
+	tab-indicator {
+		gap 5
+		width 4
+		length total-proportion=1.0
+		position "left"
+	}
+}
+
+cursor {
+	xcursor-theme "TronLightCycle-Cursors"
+	xcursor-size 24
+}
+
+animations {
+	slowdown 1.4
+}
+
+blur {
+	passes 2
+	offset 3.0
+	noise 0.03
+	saturation 1.0
+}
+
+// -------------- Auto-Start ----------------
+
+spawn-at-startup "noctalia"
+spawn-at-startup "udiskie" "--tray" "notify"
+
+// -------------- Window Rules --------------
+
+// All Windows
+window-rule {
+	geometry-corner-radius 8
+	clip-to-geometry true
+	background-effect {
+		blur true
+		xray false
+	}
+}
+
+// Floating
+window-rule {
+	match app-id="dev.noctalia.Noctalia"
+	open-floating true
+	default-column-width { fixed 1080; }
+	default-window-height { fixed 920; }
+}
+window-rule {
+	match app-id="org.gnome.Nautilus"
+	open-floating true
+	default-column-width { fixed 1080; }
+	default-window-height { fixed 920; }
+}
+
+// Foot 1/3 size
+window-rule {
+  match app-id="foot"
+  default-column-width { proportion 0.333333; }
+}
+
+// Noctalia Modules
+layer-rule {
+	match namespace="^noctalia-backdrop"
+	place-within-backdrop true
+}
+layer-rule {
+	match namespace="^noctalia-(bar-[^\"]+|notification|dock|panel|attached-panel|osd)$"
+	background-effect {
+		xray false
+	}
+}
+
+// -------------- Keybinds ------------------
+
+binds {
+	Mod+Shift+Slash { show-hotkey-overlay; }
+
+	// Noctalia
+	Mod+Return { spawn-sh "noctalia msg panel-toggle launcher"; }
+	Mod+Space { spawn-sh "noctalia msg panel-toggle control-center"; }
+	Mod+Backspace { close-window; }
+	Mod+N { spawn-sh "noctalia msg settings-toggle"; }
+	Mod+L { spawn-sh "noctalia msg session lock"; }
+	Mod+Shift+C { spawn-sh "noctalia msg panel-toggle clipboard"; }
+	Alt+Tab { toggle-overview; }
+
+	// Apps
+	Mod+K { spawn "foot" "-e" "tmux"; }
+	Mod+P { spawn "foot" "-e" "yazi"; }
+	Mod+F { spawn "firefox"; }
+	Mod+C { spawn "caido"; }
+  Mod+O { spawn "obsidian"; }
+  Mod+I { spawn "foot" "-e" "nvim" "/home/tr0n/Projects"; }
+  Mod+T { spawn "tradingview"; }
+  Mod+D { spawn "discord"; }
+  Mod+numbersign { spawn "torbrowser-launcher"; }
+
+	// Navigation
+	Alt+H { focus-column-left; }
+	Alt+L { focus-column-right; }
+	Alt+J { focus-window-down; }
+	Alt+K { focus-window-up; }
+
+	Alt+1 { focus-column-first; }
+	Alt+0 { focus-column-last; }
+
+	Ctrl+1 { focus-workspace 1; }
+	Ctrl+2 { focus-workspace 2; }
+	Ctrl+3 { focus-workspace 3; }
+	Ctrl+4 { focus-workspace 4; }
+	Ctrl+5 { focus-workspace 5; }
+
+	// Arrangement
+	Alt+Shift+H { move-column-left; }
+	Alt+Shift+L { move-column-right; }
+	Alt+Shift+J { move-window-down; }
+	Alt+Shift+K { move-window-up; }
+
+	Alt+Ctrl+J { move-column-to-workspace-down; }
+	Alt+Ctrl+K { move-column-to-workspace-up; }
+
+	Alt+Shift+Comma { consume-window-into-column; }
+	Alt+Shift+Period { expel-window-from-column; }
+
+	Alt+W { toggle-column-tabbed-display; }
+
+	Alt+R { switch-preset-column-width; }
+	Alt+E { switch-preset-window-height; }
+
+	Alt+F { fullscreen-window; }
+
+	Alt+V { toggle-window-floating; }
+	Alt+C { switch-focus-between-floating-and-tiling; }
+
+	Mod+Shift+S { screenshot; }
+
+	// Noctalia Volume Kram
+	XF86AudioRaiseVolume allow-when-locked=true {spawn-sh "noctalia msg volume-up"; }
+	XF86AudioLowerVolume allow-when-locked=true {spawn-sh "noctalia msg volume-down"; }
+	XF86AudioMute allow-when-locked=true {spawn-sh "noctalia msg volume-mute"; }
+	XF86MonBrightnessUp allow-when-locked=true {spawn-sh "noctalia msg brightness-up"; }
+	XF86MonBrightnessDown allow-when-locked=true {spawn-sh "noctalia msg brightness-down"; }
+
+	Mod+Shift+E { quit; }
+
+}
+
+
+
+
+
+include "noctalia.kdl"
